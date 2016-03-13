@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Routes File
@@ -10,6 +9,15 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+
+$_SERVER['HTTP_HOST'] = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'';
+        
+if (strpos($_SERVER['HTTP_HOST'], 'errors.') === false and isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false) {
+    $prefix_public = '/api/';
+} else {
+    $prefix_public = '';
+}
+
 
 Route::get('/', function () {
     return view('welcome');
