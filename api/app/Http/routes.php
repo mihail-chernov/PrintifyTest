@@ -13,7 +13,7 @@
 $_SERVER['HTTP_HOST'] = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'';
         
 if (strpos($_SERVER['HTTP_HOST'], 'errors.') === false and isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'nginx') !== false) {
-    $prefix_public = '/api/';
+    $prefix_public = '/api';
 } else {
     $prefix_public = '';
 }
@@ -23,12 +23,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', 'PrintifyController@test');
-Route::post('/addProduct', 'PrintifyController@addProduct');
-Route::get('/list','PrintifyController@listProducts');
-Route::get('/loadThumb','PrintifyController@showThumb');
-Route::get('/loadImage','PrintifyController@loadImage');
-Route::get('/loadImageInfo','PrintifyController@loadImageInfo');
+Route::get($prefix_public.'/test', 'PrintifyController@test');
+Route::post($prefix_public.'/addProduct', 'PrintifyController@addProduct');
+Route::get($prefix_public.'/list','PrintifyController@listProducts');
+Route::get($prefix_public.'/loadThumb','PrintifyController@showThumb');
+Route::get($prefix_public.'/loadImage','PrintifyController@loadImage');
+Route::get($prefix_public.'/loadImageInfo','PrintifyController@loadImageInfo');
 
 
 
