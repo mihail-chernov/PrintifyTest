@@ -1,0 +1,266 @@
+<style>
+
+    .tshirtDiv {
+        width:530px;
+        height:530px;
+        background-image:url('images/shirt.png')
+    }
+
+    .moveArea {
+        padding-top:79px;
+        padding-left:159px;
+    }
+
+    .dropArea {
+        width:222px;
+        height:380px;
+    }
+
+
+    .uploaded {
+
+    }
+
+    #pic1 {
+        position:relative;
+        #max-width: 122px;
+        border:dotted 3px;
+    }
+    
+    .leftFloat {
+        float:left;
+        padding-right:25px;
+    }
+
+</style>
+
+<script>
+    var dragObj = false;
+    var mode = 'selected';
+
+
+//function called when drag starts
+    function dragIt(obj, e) {
+        console.log('dragIt');
+//tell the browser what to drag
+        mode = 'drag';
+        dragObj = obj;
+        tx = parseInt(dragObj.style.left + 0, 10);
+        ty = parseInt(dragObj.style.top + 0, 10);
+        x = e.clientX;
+        y = e.clientY;
+        objWidth = obj.offsetWidth;
+        objHeight = obj.offsetHeight;
+        areaWidth = document.getElementById('dropArea').offsetWidth;
+        areaHeight = document.getElementById('dropArea').offsetHeight;
+        console.log(objWidth + ' ' + objHeight);
+//theEvent.dataTransfer.setData("Text", theEvent.target.id);
+    }
+
+    function getOffsetSum(elem) {
+        var top = 0, left = 0
+        while (elem) {
+            top = top + parseFloat(elem.offsetTop)
+            left = left + parseFloat(elem.offsetLeft)
+            elem = elem.offsetParent
+        }
+
+        return {top: Math.round(top), left: Math.round(left)}
+    }
+
+    function mouseover(e) {
+        obj = document.getElementById('pic1');
+        res = getOffsetSum(obj);
+        tx = res.left;
+        ty = res.top;
+
+        x = e.clientX;
+        y = e.clientY;
+        x = x - tx;
+        y = y - ty;
+        console.log(tx);
+
+        if (x < 10 && y < 10) {
+            obj.style.cursor = 'nw-resize';
+            mode = mode != 'resize' ? 'preResize' : mode;
+            resizePointPos = 'nw';
+        } else if (x > objWidth - 10 && y < 10) {
+            obj.style.cursor = 'sw-resize';
+            mode = mode != 'resize' ? 'preResize' : mode;
+            resizePointPos = 'ne';
+        } else if (y > objHeight - 10 && x < 10) {
+            obj.style.cursor = 'sw-resize';
+            mode = mode != 'resize' ? 'preResize' : mode;
+            resizePointPos = 'sw';
+        } else if (y > objHeight - 10 && x > objWidth - 10) {
+            obj.style.cursor = 'se-resize';
+            mode = mode != 'resize' ? 'preResize' : mode;
+            resizePointPos = 'se';
+        } else
+        {
+            mode = 'selected';
+            obj.style.cursor = 'move';
+        }
+    }
+
+    function mousemove(e) {
+        console.log(mode);
+        if (mode == 'drag' && dragObj)
+        {
+//dragObj.style.position = 'absolute';
+            dragObj.style.border = 'dotted 3px';
+            newX = tx + e.clientX - x;
+            newY = ty + e.clientY - y;
+
+
+            if (newX + objWidth > areaWidth) {
+                newX = areaWidth - objWidth;
+            } else if (newX < 0) {
+                newX = 0;
+            }
+
+            if (newY + objHeight > areaHeight) {
+                newY = areaHeight - objHeight;
+            } else if (newY < 0) {
+                newY = 0;
+            }
+
+            dragObj.style.left = newX + "px";
+            dragObj.style.top = newY + "px";
+            return false;
+        } else if (mode == 'resize') {
+            console.log('resizing');
+            console.log(resizePointPos);
+            res = getOffsetSum(dragObj);
+            tx = res.left;
+            ty = res.top;
+
+            newX = e.clientX;
+            newY = e.clientY;
+
+            var plusX = newX - resizePointX;
+            var plusY = newY - resizePointY;
+            plusX = parseInt(plusX / 5, 10);
+
+            tx = parseInt(dragObj.style.left + 0, 10);
+            ty = parseInt(dragObj.style.top + 0, 10);
+            objWidth = obj.offsetWidth;
+            objHeight = obj.offsetHeight;
+
+
+            if (resizePointPos == 'nw' || resizePointPos == 'w' || resizePointPos == 'sw') {
+                if (plusX < 0) {
+                    // larger
+                    newWidth = objWidth - plusX * 2;
+                    newX = resizePointX;
+                } else {
+                    newWidth = objWidth - plusX * 2;
+                    newX = resizePointX;
+                }
+            }
+
+            if (resizePointPos == 'ne' || resizePointPos == 'e' || resizePointPos == 'se') {
+                if (plusX < 0) {
+                    // larger
+                    newWidth = objWidth + plusX * 2;
+                    newX = resizePointX - newWidth;
+                } else {
+                    newWidth = objWidth + plusX * 2;
+                    newX = resizePointX - newWidth;
+                }
+            }
+            //dragObj.style.top = newY + 'px';
+            if (newWidth < 25) {
+                newWidth = 25;
+            } else if (newWidth > 222) {
+                newWidth = 222;
+            }
+            obj.width = newWidth;
+            obj.left = newX;
+
+            //console.log(plusX);
+            return;
+        }
+
+    }
+
+
+//function called when element drops
+    function dropIt(theEvent) {
+        console.log('dropIt');
+        dragObj.style.border = 'none';
+        dragObj = false;
+        mode = '';
+        return;
+    }
+
+
+    function imageClick(e) {
+        obj = document.getElementById('pic1');
+        if (mode != 'selected') {
+            mode = 'selected';
+            obj.style.border = 'dotted 3px';
+        } else {
+            mode = '';
+            obj.style.border = 'none';
+        }
+
+    }
+
+    function mousedown(e) {
+        if (mode == 'preResize') {
+            mode = 'resize';
+            resizePointX = e.clientX;
+            resizePointY = e.clientY;
+            dragObj = document.getElementById('pic1');
+            dragObj.style.border = 'dotted 3px';
+
+            e.preventDefault();
+        }
+    }
+
+    function mouseup(e) {
+        if (mode == 'resize') {
+            mode = 'selected';
+        }
+    }
+
+
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+
+        // Loop through the FileList and render image files as thumbnails.
+        for (var i = 0, f; f = files[i]; i++) {
+
+            // Only process image files.
+            if (!f.type.match('image.*')) {
+                continue;
+            }
+            var reader = new FileReader();
+            reader.onload = function (theFile) {
+                document.getElementById('pic1').src = theFile.target.result;
+            };
+            reader.readAsDataURL(f);
+        }
+    }
+
+</script>
+
+
+<div class="tshirtDiv" onmouseup="mouseup(event)">
+    <div class="moveArea" id="place1" ondrop2="dropIt(event);"   ondragover2="event.preventDefault()">
+        <div class="dropArea" id="dropArea" onmouseup="mouseup(event)" onmousemove="mousemove(event)" ondragover="mousemove(event);event.preventDefault()" ondrop="dropIt(event);
+                event.preventDefault()" >
+            <img src=""  onmousedown="mousedown(event)" width = "122" onmouseover="mouseover(event)"  draggable="true" ondragstart="dragIt(this,event);" id="pic1" onClick="imageClick(event)">
+        </div>
+    </div>
+</div>
+
+<div ng-controller="ProductController" data-ng-init="init()">
+    <div class="leftFloat">
+        <input value="Upload picture" type="file" id="files" onchange="handleFileSelect(event)">
+    </div>
+    <div class="leftFloat">
+        <input type="button" value="Save" ng-click="saveData()">
+    </div>
+</div>

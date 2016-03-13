@@ -1,0 +1,9 @@
+<div id="contents" ng-repeat="product in products| filter:query | orderBy:orderProp">
+
+    <DIV class="product">
+        <input type="checkbox" value="{{product.id}}">
+        <img src="http://localhost/api/server.php/loadThumb?id={{product.id}}" ng-click="updateProduct({{product.id}})" border="0">
+    </DIV>
+
+
+</div>
